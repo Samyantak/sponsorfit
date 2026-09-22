@@ -146,7 +146,7 @@ Given an advertiser profile, rank all candidate publishers. Ground truth: publis
 1. **Random** — the floor
 2. **Vertical match** — same-category publishers ranked first, else random. Embarrassingly often this is competitive.
 3. **BM25 / TF-IDF** — keyword overlap between advertiser description and publisher content
-4. **Embedding cosine similarity** — embed both sides, rank by similarity
+4. **Embedding cosine similarity** — embed both sides, rank by similarity. Needs the local embedding model set up first (see Phase 3 → *Models*); this baseline is its first user, so the setup happens here and Phase 3 reuses it.
 
 ### Metrics
 - **Precision@5** and **Precision@10** — headline number, easy to explain
@@ -195,8 +195,28 @@ The reasoning field is not decoration. It's what makes the system inspectable, i
 - Cap total cost per campaign run and fail loudly when exceeded
 - Cache by `(prompt_version, campaign_id, candidate_set_hash)` so re-running an eval is free
 
+### Models
+Everything runs locally on Ollama by default. The one exception is a single, capped cloud run for comparison.
+
+**Embedding model (retrieval stage)**
+- [ ] Pull a dedicated local embedding model (e.g. `qwen3-embedding` or `nomic-embed-text`). `qwen3:8b`/`qwen3:14b` are chat models, not embedding models.
+- [ ] Add a metered `embed()` to `llm.py`, logged to `data/costs.db` and traces the same way chat calls are ($0 on Ollama).
+- [ ] Cache vectors on disk keyed by `(embedding_model, text_hash)`, so every publisher profile is embedded exactly once.
+- The Phase 2 embedding baseline and the Phase 3 top-50 shortlist use the **same model and cache**. Otherwise "rerank beats embeddings" compares two different embedding spaces, not reasoning vs. similarity.
+- Record retrieval recall@50: how often the true publisher is in the shortlist at all. The reranker can't recover a publisher retrieval dropped, and this number is the ceiling on everything downstream.
+
+**Reranker comparison (local vs. cloud)**
+- [ ] **Default reranker: `qwen3:14b`, local.** All development runs, and all Phase 4 prompt iteration, use this.
+- [ ] **One cloud comparison run** (Claude Sonnet, via the existing `provider="anthropic"` path) with the **same prompt version, same frozen split, same cached top-50 candidate sets**. Only the model changes.
+- [ ] Estimate the cloud run's cost *before* running it, from the local run's logged `tokens_in`/`tokens_out` in `data/costs.db` × the rates in `pricing.py`. Hard cap: **$10 per cloud run**, enforced by the per-run cost cap above.
+- [ ] Rows in `results/baselines.md`: embedding-only · `qwen3:14b` rerank · cloud rerank, each with MRR, P@5 (hard negatives), **cost per campaign**, and **latency per campaign**.
+
+Why this is worth the spend: if the local 14B reranker barely beats embeddings, this run tells you whether that's a limit of the *approach* or of the *model size*. Either answer is a real finding. "A local 14B model gets X% of a frontier model's lift at $0" is a cost-quality result, and it's exactly the pivot the risk register calls for.
+
+Don't re-run the cloud model on every prompt version. Run it once on the Phase 3 prompt, and at most once more on the final Phase 4 prompt for the headline table.
+
 ### Exit criteria
-Agent rows appear in `results/baselines.md`. Whatever the number, you know it.
+Agent rows (local and cloud reranker) appear in `results/baselines.md` alongside retrieval recall@50. Whatever the numbers, you know them.
 
 ---
 

@@ -95,3 +95,13 @@ Both cloud providers and Ollama are now confirmed working through the same wrapp
 - Created **private** repo [Samyantak/sponsorfit](https://github.com/Samyantak/sponsorfit) and pushed `main`. Private for now; will go public once there are results worth showing.
 - Working convention from here on: every meaningful chunk of work ends with a PROGRESS.md entry, a commit, and a push.
 - Plan-vs-reality review: Phase 0 finished in ~5 calendar days, in line with the roadmap's 3–5 day estimate. Updated the stale README "Status" section (it still described Phase 0 as in progress). Flagged two items for later phases — no local embedding model pulled yet (needed by Phase 2), and the implications of a local-14B reranker for the headline comparison (Phase 3).
+
+## 2026-09-22 — Roadmap: embedding model + local/cloud reranker comparison added to Phase 3
+
+**Goal:** fold the two issues flagged in the plan review into the plan itself: no embedding model exists yet, and a local 14B reranker may weaken the headline result.
+
+- Added a **Models** section to ROADMAP.md Phase 3:
+  - **Embedding model:** pull a dedicated local embedding model (`qwen3:8b`/`14b` are chat models), add a metered `embed()` to `llm.py`, and cache vectors by `(embedding_model, text_hash)`. The Phase 2 baseline and the Phase 3 top-50 shortlist must share the **same model and cache**. Otherwise "rerank vs. embeddings" compares two embedding spaces, not reasoning vs. similarity. Added retrieval **recall@50** as a tracked number, since it caps everything downstream.
+  - **Reranker comparison:** `qwen3:14b` local stays the default for all development and Phase 4 iteration. Add **one** Claude Sonnet run on identical inputs (same prompt version, split, cached candidate sets), with cost estimated beforehand from the local run's logged token counts × `pricing.py`, and a hard **$10 cap per cloud run**. Cloud runs at most twice total (the Phase 3 prompt, then optionally the final Phase 4 prompt).
+- **Placement decision:** the user asked for this in Phase 3. The embedding *setup* is also referenced from Phase 2 baseline #4, because that baseline is the model's first user and can't run without it. The content lives in Phase 3; Phase 2 points to it.
+- Updated the routing table in README.md and the comments in `.env.example` to match.

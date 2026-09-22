@@ -46,11 +46,12 @@ Default model routing (see `.env.example` for the full breakdown):
 
 | Task | Provider / model |
 |---|---|
-| Embeddings and retrieval | Ollama, local |
+| Embeddings and retrieval (Phase 2–3) | Ollama, local embedding model (TBD in Phase 2) |
 | Sponsor extraction (Phase 1) | Ollama — `qwen3:8b` |
 | Smoke tests, pipeline debugging | Ollama — `qwen3:8b` |
 | Prompt iteration (Phase 4) | Ollama — `qwen3:14b`, batched overnight |
 | Full test runs, headline numbers | Ollama — `qwen3:14b` |
+| Placement rerank (Phase 3) | Ollama — `qwen3:14b`; plus one capped (≤ $10) Claude Sonnet run on the same inputs for comparison |
 | Strategy agent (Phase 5) | Ollama |
 
 ## Repo layout
