@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+
+# Environments
+.venv/
+.env
+
+# Secrets never committed — .env.example is the tracked template
+
+# Cost DB — local/machine-specific, regenerate by running scripts/smoke_test.py
+data/costs.db
+data/costs.db-wal
+data/costs.db-shm
+
+# Scraped/derived data — bulky and regenerable, never hand-edited
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+# NOTE: data/eval/* is intentionally NOT ignored — frozen eval splits are
+# small, precious, and should be visible/reviewable in git once created.
+
+# Agent run traces — explicitly ephemeral per roadmap
+traces/*
+!traces/.gitkeep
+
+# Notebook checkpoints
+notebooks/.ipynb_checkpoints/
+
+# Claude Code per-machine settings (shared settings would go in .claude/settings.json)
+.claude/settings.local.json
