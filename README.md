@@ -30,8 +30,9 @@ the result and it gets reported as such.
 
 ## Status
 
-Phase 0 — Foundation (scaffolding, metered LLM wrapper, cost tracking,
-structured tracing). No scraping or agent logic yet.
+Phase 0 (foundation: metered LLM wrapper, cost tracking, structured tracing)
+is complete. Next: Phase 1, sourcing the newsletter corpus. No scraping or
+agent logic yet.
 
 ## Budget
 

@@ -94,3 +94,4 @@ Both cloud providers and Ollama are now confirmed working through the same wrapp
 - Git identity set **repo-locally** (not global): `Samyantak Mohanty` / GitHub noreply email, so the personal email never appears in public commit metadata if the repo is made public later.
 - Created **private** repo [Samyantak/sponsorfit](https://github.com/Samyantak/sponsorfit) and pushed `main`. Private for now; will go public once there are results worth showing.
 - Working convention from here on: every meaningful chunk of work ends with a PROGRESS.md entry, a commit, and a push.
+- Plan-vs-reality review: Phase 0 finished in ~5 calendar days, in line with the roadmap's 3–5 day estimate. Updated the stale README "Status" section (it still described Phase 0 as in progress). Flagged two items for later phases — no local embedding model pulled yet (needed by Phase 2), and the implications of a local-14B reranker for the headline comparison (Phase 3).
