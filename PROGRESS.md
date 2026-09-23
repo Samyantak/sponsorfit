@@ -105,3 +105,35 @@ Both cloud providers and Ollama are now confirmed working through the same wrapp
   - **Reranker comparison:** `qwen3:14b` local stays the default for all development and Phase 4 iteration. Add **one** Claude Sonnet run on identical inputs (same prompt version, split, cached candidate sets), with cost estimated beforehand from the local run's logged token counts × `pricing.py`, and a hard **$10 cap per cloud run**. Cloud runs at most twice total (the Phase 3 prompt, then optionally the final Phase 4 prompt).
 - **Placement decision:** the user asked for this in Phase 3. The embedding *setup* is also referenced from Phase 2 baseline #4, because that baseline is the model's first user and can't run without it. The content lives in Phase 3; Phase 2 points to it.
 - Updated the routing table in README.md and the comments in `.env.example` to match.
+
+## 2026-09-22 — Phase 1.1: publisher screening (in progress)
+
+**Goal:** before writing any extraction code, find out which candidate newsletters are actually usable as sources: reachable, robots-permitted, and visibly carrying sponsors.
+
+**Built:**
+- `src/sponsorfit/scrape/fetch.py` — `PoliteFetcher`, the single path for all scraping (the `llm.py` equivalent for HTTP). robots.txt checked on every fetch using **protego** (RFC 9309; stdlib `urllib.robotparser` ignores `*` wildcards, which Substack's robots.txt uses, and treats a 403 on robots.txt as "disallow all"). 4xx robots → allow, 5xx/unreachable → disallow. Per-host spacing ≥ 2s or the site's `Crawl-delay`. Crawl delays over 30s are **declined, never violated** (`CrawlDelayTooLong`). Successful responses cached to `data/raw/http/` (gitignored), so re-runs are free.
+- `src/sponsorfit/scrape/screen.py` — deterministic screener, no LLM calls: feed discovery (`<link rel=alternate>` + common paths), **sitemap fallback** for sites with no feed (follows sitemap indexes, orders issues by `<lastmod>`), reads each sampled issue's feed body **and** its web page, and scans for sponsor markers.
+- `scripts/screen_publishers.py` → `data/sources/screening.csv` + `screening_samples.jsonl` (per-issue evidence). Tracked in git.
+- `data/sources/candidates.csv` — 99 candidates across 8 verticals: 75 from prior knowledge, 24 from web research (beehiiv's parenting and fitness top-10 lists, Reletter's Substack parenting chart, food Substack roundups).
+- New deps: `feedparser`, `protego`. Tests: 3 → 20, all passing, no network.
+
+**Real problems found by looking at real output (none were caught by the first unit tests):**
+1. **Cooperpress** (JS/Go/Postgres Weekly) scored 0%. Its feed rewrites links, so the `utm_content=sponsored` param seen on the web page isn't in the feed; the only marker is a small `<span>sponsor</span>` label after the company name. Added a detector for it.
+2. **The Spoon's robots.txt sets `Crawl-delay: 600`** (10 min/request), which stalled the first run for over an hour. The fetcher was correctly honoring it; screening now declines instead of waiting.
+3. **Link-roundup feeds** (Console, Sidebar) point items at *external* articles, so the screener fetched github.com, anthropic.com, etc. and scored the wrong pages. Console's first-pass 0.4 turned out to be **entirely false positives** from those pages. Issue pages are now only fetched on the newsletter's own domain.
+4. **beehiiv strips ad blocks from RSS.** The Neuron's feed has full text but no sponsors; the web page has `<div id="sponsored">` blocks under a "FROM OUR PARTNERS" heading. The screener now always reads the web page as well, and detects both.
+5. **~30 sites had no feed** (mostly beehiiv with RSS disabled). The sitemap fallback recovered Exec Sum, This Week in Fintech, Out-of-Pocket, Superhuman AI, Every Baby Is Different Anyways, and others.
+6. **Some feeds are the website, not the newsletter** (The Daily Upside, Motherly, ParentData, Marketing Millennials' `/articles`). Their 0% says nothing about the email. Not fixed yet.
+
+**Changed the pass rule.** It was "≥ 40% of sampled issues sponsored"; now it's "≥ 1 sampled issue with a sponsor signal", plus human review. Phase 1 needs *pairings*: a newsletter sponsored in 1 of 3 issues still yields ~15 pairings over a 50-issue archive. The 40% rule was rejecting clearly sponsored newsletters (Growth Memo/Semrush, Today's Ajenda/Pique, Money with Katie/Betterment).
+
+**Spot-check (the roadmap's "check real output" discipline, applied early):** read all 239 detected sponsor snippets.
+- Snippet-level precision ≈ **89%** (~25 false positives in ~230). False positives fall into three kinds: mid-sentence prose ("presented by counsel", "sponsored by herbal tincture brands"), self/cross-promo ("Together with Go Weekly", "not boring world", "PRESENTED BY The Pragmatic Engineer"), and markup noise.
+- 3 sites had **only** false positives and are rejected (Fintech Business Weekly, Generation Iron, Naptime Kitchen). Verdicts and reasons are in `data/sources/review.csv`.
+
+**Carry-forward for Phase 1.2 extraction:**
+- The sponsor name is often **only in a logo image** (Exec Sum "Together with [logo]", The Neuron "FROM OUR PARTNERS", Out-of-Pocket "brought to you by..."). Text-only extraction will miss them, so read `<img alt>` and outbound link domains too.
+- Self-promo and cross-promo need an explicit exclusion rule, or they become fake pairings.
+- beehiiv pages repeat body text inside JSON, so dedupe before extraction.
+
+**Current result:** 37 candidates → **34 kept** after review. Tech 14, health/fitness 6, indie business 4, marketing 3, personal finance 3, design 2, food 1, parenting 1. That's below the 40–60 target and badly imbalanced: consumer creator newsletters (recipes, parenting) mostly don't run sponsors, which is itself a real finding about the market. Next: decide the vertical mix with the user.

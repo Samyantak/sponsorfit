@@ -1,0 +1,38 @@
+name,vertical,verdict,evidence,notes
+CSS Weekly,design,keep,"""From Our Sponsor"" block",only 1/6 issues sampled; confirm depth in 1.2
+Frontend Focus,design,keep,Cooperpress sponsor labels (Tiger Data; Sentry; Expo; SurveyJS; Foxit),
+What to Cook,food,keep,"""sponsored by Cometeer""",sponsor mentioned in prose; 1/6
+Naptime Kitchen,food,reject,"only hit is prose (""brought to you by Kate's best friend Molly"")",no genuine sponsor seen
+Arnold's Pump Club,health_fitness,keep,Together With Coveron / Momentous / Eight Sleep / Babbel / Cometeer,
+Health Tech Nerds,health_fitness,keep,in partnership with Ursa Health; brought to you by Bridge,"one prose false positive (""presented by counsel"")"
+Hospitalogy,health_fitness,keep,utm_medium=sponsor links,"text hit (""sponsored by Draft Kings"") is prose, not a sponsor; verify in 1.2"
+Out-of-Pocket,health_fitness,keep,"""brought to you by..."" blocks",sponsor name is in a logo image — extractor must read img alt / link domains
+Tim Ferriss Blog,health_fitness,keep,AG1; Momentous; ProLon; Fin; Shopify; Helix Sleep; Gusto; Incogni,podcast show notes rather than a newsletter; one prose false positive
+Today's Ajenda,health_fitness,keep,sponsored by Pique; sponsored by Function Health,
+Generation Iron,health_fitness,reject,"only hit is prose (""presented by none other than Arnold Schwarzenegger"")",no genuine sponsor seen
+Newsletter Operator,indie_business,keep,sponsored by beehiiv,sponsor is also the author's own platform partner; single sponsor so far
+Not Boring,indie_business,keep,brought to you by… Reducto / Arena Magazine / Create,"""not boring world"" hit is self-promo"
+The Bootstrapped Founder,indie_business,keep,a word from our Sponsor: Paddle.com,1/6
+Trends.vc,indie_business,keep,"""Brought to you by the team behind HeadsUp""","unclear whether HeadsUp is a sponsor or the author's own product — verify in 1.2; drop if self-promo"
+Growth Memo,marketing,keep,Today's sponsor: Semrush,
+Stacked Marketer,marketing,keep,SPONSORED BY Bitmedia / Cloudwaves / Audiense / Psychology of Marketing,"""FROM THE CREW"" / ""Happy Monday"" hits are house content"
+The Marketing Millennials,marketing,keep,in partnership with Unbounce,feed is the /articles blog not the daily email — 1.2 must find the email archive
+Every Baby Is Different Anyways,parenting,keep,Presented by BabyBjörn / Talli / SNOO Smart Sleeper,
+Exec Sum,personal_finance,keep,"Together with [logo]; brought to you by F2",sponsor name often only in logo image
+Money with Katie,personal_finance,keep,brought to you by my partner Betterment,
+This Week in Fintech,personal_finance,keep,SPONSORED Bitfinex / Middesk / CoverForce,
+Fintech Business Weekly,personal_finance,reject,"only hit is prose (""presented by these types of third-party relationships"")",no genuine sponsor seen
+Ben's Bites,tech,keep,brought to you by Name.com / Adobe Acrobat,
+ByteByteGo,tech,keep,(Sponsored) blocks,
+Golang Weekly,tech,keep,Cooperpress sponsor labels,"""Together with Go Weekly"" is cross-promo, not a sponsor"
+JavaScript Weekly,tech,keep,Cooperpress sponsor labels,
+Lenny's Newsletter,tech,keep,Brought to you by: Optimizely / DX / WorkOS,
+Postgres Weekly,tech,keep,Cooperpress sponsor labels,"""Together with Postgres Weekly"" is cross-promo"
+PyCoder's Weekly,tech,keep,sponsor labels (RWX; ScrapingBee; Real Python),
+Refactoring,tech,keep,brought to you by Blitzy / Notion,
+SRE Weekly,tech,keep,A message from our sponsor: PlanetScale,
+Superhuman AI,tech,keep,PRESENTED BY Clarify / Profound / Harness / Nebius / Glean …,
+The Neuron,tech,keep,FROM OUR PARTNERS blocks,sponsor name often only in logo image
+The Pragmatic Engineer,tech,keep,Brought to You by turbopuffer,"""PRESENTED BY The Pragmatic Engineer"" is self-promo"
+The Rundown AI,tech,keep,TOGETHER WITH Unwrap / Pave / Algolia; PRESENTED BY Optimizely / CData,
+TLDR,tech,keep,(Sponsor) blocks,

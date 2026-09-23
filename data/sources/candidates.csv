@@ -1,0 +1,100 @@
+name,vertical,url,notes
+Lenny's Newsletter,tech,https://www.lennysnewsletter.com,product/growth; substack
+The Pragmatic Engineer,tech,https://newsletter.pragmaticengineer.com,substack
+ByteByteGo,tech,https://blog.bytebytego.com,system design; substack
+JavaScript Weekly,tech,https://javascriptweekly.com,cooperpress
+Golang Weekly,tech,https://golangweekly.com,cooperpress
+Postgres Weekly,tech,https://postgresweekly.com,cooperpress
+Console,tech,https://console.dev,devtools
+TLDR,tech,https://tldr.tech,
+The Rundown AI,tech,https://www.therundown.ai,beehiiv
+Ben's Bites,tech,https://www.bensbites.com,AI
+Superhuman AI,tech,https://www.superhuman.ai,AI; beehiiv
+The Neuron,tech,https://www.theneurondaily.com,AI; beehiiv
+Refactoring,tech,https://refactoring.fm,eng management; substack
+PyCoder's Weekly,tech,https://pycoders.com,
+SRE Weekly,tech,https://sreweekly.com,
+Changelog News,tech,https://changelog.com/news,
+Data Elixir,tech,https://dataelixir.com,data science
+Hacker Newsletter,tech,https://hackernewsletter.com,
+Bytes,tech,https://bytes.dev,JS; ui.dev
+Stacked Marketer,marketing,https://www.stackedmarketer.com,
+The Marketing Millennials,marketing,https://www.marketingmillennials.com,beehiiv
+Growth Unhinged,marketing,https://www.growthunhinged.com,B2B growth; substack
+Marketing Examples,marketing,https://marketingexamples.com,
+Demand Curve,marketing,https://www.demandcurve.com,
+Growth Memo,marketing,https://www.growth-memo.com,SEO; substack
+SEOFOMO,marketing,https://seofomo.co,SEO
+DTC Newsletter,marketing,https://www.dtcnewsletter.com,ecommerce; beehiiv
+2PM,marketing,https://2pml.com,ecommerce
+Exit Five,marketing,https://www.exitfive.com,B2B marketing
+Why We Buy,marketing,https://www.whywebuy.co,consumer psychology; URL unverified
+The Daily Upside,personal_finance,https://www.thedailyupside.com,markets/business
+Exec Sum,personal_finance,https://www.execsum.co,Litquidity; beehiiv
+Money with Katie,personal_finance,https://moneywithkatie.com,
+Young Money,personal_finance,https://www.youngmoney.co,substack
+Fintech Business Weekly,personal_finance,https://fintechbusinessweekly.substack.com,fintech
+This Week in Fintech,personal_finance,https://thisweekinfintech.com,fintech
+Net Interest,personal_finance,https://www.netinterest.co,financial sector; substack
+Mostly Metrics,personal_finance,https://www.mostlymetrics.com,CFO/finance; substack
+Kyla Scanlon,personal_finance,https://kyla.substack.com,macro/econ
+Milk Road,personal_finance,https://www.milkroad.com,crypto; beehiiv
+The Diff,personal_finance,https://www.thediff.co,finance+tech
+Rich Habits,personal_finance,https://www.richhabits.net,URL unverified
+Fitt Insider,health_fitness,https://insider.fitt.co,fitness/wellness industry
+Out-of-Pocket,health_fitness,https://www.outofpocket.health,healthcare industry
+Hospitalogy,health_fitness,https://hospitalogy.com,healthcare industry
+Health Tech Nerds,health_fitness,https://www.healthtechnerds.com,
+Second Opinion,health_fitness,https://secondopinion.media,health tech
+Citius Mag,health_fitness,https://citiusmag.com,running
+Tim Ferriss Blog,health_fitness,https://tim.blog,self-improvement; podcast show notes list sponsors
+Sidebar,design,https://sidebar.io,
+Dense Discovery,design,https://www.densediscovery.com,
+UX Design Weekly,design,https://uxdesignweekly.com,
+Frontend Focus,design,https://frontendfoc.us,cooperpress
+Web Design Weekly,design,https://web-design-weekly.com,
+CSS Weekly,design,https://css-weekly.com,
+ParentData,parenting,https://parentdata.org,Emily Oster
+Lucie's List,parenting,https://www.lucieslist.com,
+The Kid Should See This,parenting,https://thekidshouldseethis.com,
+Motherly,parenting,https://www.mother.ly,
+Snaxshot,food,https://snaxshot.com,CPG food
+The Spoon,food,https://thespoon.tech,food tech
+Alison Roman,food,https://alisoneroman.substack.com,
+Dinner: A Love Story,food,https://www.dinneralovestory.com,
+AgFunder News,food,https://agfundernews.com,agrifood tech
+David Lebovitz,food,https://davidlebovitz.substack.com,
+Not Boring,indie_business,https://www.notboring.co,substack
+Starter Story,indie_business,https://www.starterstory.com,
+The Curiosity Chronicle,indie_business,https://www.sahilbloom.com,Sahil Bloom
+Contrarian Thinking,indie_business,https://contrarianthinking.co,Codie Sanchez
+Newsletter Operator,indie_business,https://www.newsletteroperator.com,
+Creator Science,indie_business,https://creatorscience.com,Jay Clouse
+The Generalist,indie_business,https://www.generalist.com,
+Trends.vc,indie_business,https://trends.vc,
+The Bootstrapped Founder,indie_business,https://thebootstrappedfounder.com,
+The Profile,indie_business,https://theprofile.substack.com,
+Every Baby Is Different Anyways,parenting,https://everybabyisdifferentanyways.com,beehiiv blog top-10 list
+Parenthood,parenting,https://parenthood.beehiiv.com,daily; beehiiv
+Dads on Draft,parenting,https://dadsondraft.beehiiv.com,beehiiv
+Birdie,parenting,https://www.wearebirdie.com,women's lifestyle incl. parenting
+Techno Sapiens,parenting,https://technosapiens.substack.com,tech + parenting; URL guessed
+Parenting Translator,parenting,https://parentingtranslator.substack.com,URL guessed
+Design Mom,parenting,https://designmom.substack.com,URL guessed
+Nameberry,parenting,https://nameberry.substack.com,baby names; URL guessed
+Big Little Feelings,parenting,https://biglittlefeelings.substack.com,URL guessed
+Raising Good Humans,parenting,https://alizapressman.substack.com,URL guessed
+Arnold's Pump Club,health_fitness,https://arnoldspumpclub.com/blogs/newsletter,shopify blog
+Try This,health_fitness,https://trythis.dhrupurohit.com,
+Home Gym Club,health_fitness,https://newsletter.garagegymreviews.com,Garage Gym Reviews
+The Weekly Rep,health_fitness,https://www.theweeklyrep.com,
+The Rundown (running),health_fitness,https://rundown.runtheday.com,running/endurance
+Today's Ajenda,health_fitness,https://todays-ajenda.beehiiv.com,women's health
+Generation Iron,health_fitness,https://generation-iron.beehiiv.com,strength
+The Healthy Dose,health_fitness,https://healthydose.co,
+What to Cook,food,https://whattocook.substack.com,Caroline Chambers
+Vittles,food,https://vittles.substack.com,food writing
+Violet Witchel,food,https://violetwitchel.substack.com,URL guessed
+Wishbone Kitchen,food,https://wishbonekitchen.substack.com,URL guessed
+Eat Good,food,https://eatgood.substack.com,Jenn Lueke; URL guessed
+Naptime Kitchen,food,https://naptimekitchen.substack.com,URL guessed
