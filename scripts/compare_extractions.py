@@ -19,16 +19,14 @@ import sys
 from collections import Counter, defaultdict
 
 from sponsorfit.corpus.extract import prepare_issue, sponsorship_signal_nearby
+from sponsorfit.corpus.runs import load_run
 from sponsorfit.scrape.fetch import PoliteFetcher
 
-MODEL_SLUG = "qwen3-8b"
 WATCH = ["This Week in Fintech", "Exec Sum", "Fintech Is Femme", "Tim Ferriss Blog", "Out-of-Pocket"]
 
 
 def summarize(version: str, site_of: dict, fetcher: PoliteFetcher) -> dict:
-    path = os.path.join("data", "processed", "extractions", f"{version}__{MODEL_SLUG}.jsonl")
-    with open(path, encoding="utf-8") as f:
-        records = [json.loads(line) for line in f]
+    records = list(load_run(version, fetcher=fetcher).values())
     status = Counter(r["status"] for r in records)
     grounded, signal = 0, 0
     per_pub = defaultdict(lambda: [0, 0])  # publisher -> [issues, sponsors]
@@ -77,7 +75,40 @@ def main() -> int:
     print("\nsponsors / issue, news-heavy publishers:")
     for p in WATCH:
         print(f"  {p:<24}" + "".join(f"{runs[v]['per_pub'].get(p, '-')!s:>24}" for v in versions))
+    if len(versions) == 2:
+        head_to_head(*versions, site_of, fetcher)
     return 0
+
+
+def head_to_head(old: str, new: str, site_of: dict, fetcher: PoliteFetcher) -> None:
+    """Sponsors `old` found that `new` dropped, split by whether sponsorship
+    wording sits near the evidence: dropped *with* a signal ≈ probable recall
+    loss; dropped *without* ≈ probable precision gain. Only issues both runs
+    parsed successfully count, so a bad_json isn't mistaken for a drop."""
+    a, b = load_run(old, fetcher=fetcher), load_run(new, fetcher=fetcher)
+    shared = [i for i in a if i in b and a[i]["status"] == "ok" and b[i]["status"] == "ok"]
+    lost_signal, lost_plain, gained = Counter(), Counter(), 0
+    examples = []
+    for i in shared:
+        names_b = {s["name"].lower() for s in b[i]["sponsors"]}
+        dropped = [s for s in a[i]["sponsors"] if s["grounding"] != "none" and s["name"].lower() not in names_b]
+        gained += sum(1 for s in b[i]["sponsors"] if s["name"].lower() not in {x["name"].lower() for x in a[i]["sponsors"]})
+        if not dropped:
+            continue
+        issue = prepare_issue(fetcher.get(a[i]["issue_url"]).text, site_of[a[i]["publisher_id"]])
+        for s in dropped:
+            if sponsorship_signal_nearby(s["evidence"], issue):
+                lost_signal[a[i]["publisher"]] += 1
+                examples.append((a[i]["publisher"], s["name"], s["evidence"][:80]))
+            else:
+                lost_plain[a[i]["publisher"]] += 1
+    print(f"\nhead-to-head on {len(shared)} issues both runs parsed:")
+    print(f"  dropped by {new}, signal nearby (probable recall loss):     {sum(lost_signal.values())}")
+    print(f"  dropped by {new}, no signal nearby (probable precision gain): {sum(lost_plain.values())}")
+    print(f"  newly found by {new}:                                        {gained}")
+    print(f"  recall-loss hotspots: {lost_signal.most_common(6)}")
+    for p, name, ev in examples[:8]:
+        print(f"    {p[:22]:<22} {name[:20]:<20} {ev}")
 
 
 if __name__ == "__main__":

@@ -122,8 +122,41 @@ def _norm(s: str) -> str:
     return " ".join(s.translate(_QUOTE_MAP).lower().split())
 
 
-def evidence_grounding(evidence: str, issue: PreparedIssue) -> str:
-    """exact | prefix | none — does the quoted evidence actually occur?"""
+STITCH_MIN_COVERAGE = 0.75  # share of evidence words that must be verbatim
+STITCH_MIN_CHUNK = 3  # words; shorter matches are too generic to count
+STITCH_MAX_SPAN = 800  # chars between the first and last matched chunk
+
+
+def _stitched(ev_words: list[str], haystack: str, name: str) -> bool:
+    """Evidence assembled from verbatim pieces that sit close together.
+
+    Issues put the label on its own line above a list ("Brought to You by" /
+    "• Buildkite – the CI platform…") or after the ad ("…Postgres tables. /
+    ParadeDB sponsor"), and the model joins them into one quote that occurs
+    nowhere contiguously. Accept it only if most of it is verbatim, the
+    pieces are within STITCH_MAX_SPAN chars of each other, and the sponsor's
+    name occurs inside that span — invented evidence fails all three."""
+    i, covered, positions = 0, 0, []
+    while i < len(ev_words):
+        j = len(ev_words)
+        while j - i >= STITCH_MIN_CHUNK and " ".join(ev_words[i:j]) not in haystack:
+            j -= 1
+        if j - i >= STITCH_MIN_CHUNK:
+            chunk = " ".join(ev_words[i:j])
+            positions.append((haystack.find(chunk), len(chunk)))
+            covered += j - i
+            i = j
+        else:
+            i += 1
+    if not positions or covered / len(ev_words) < STITCH_MIN_COVERAGE:
+        return False
+    start = min(p for p, _ in positions)
+    end = max(p + n for p, n in positions)
+    return end - start <= STITCH_MAX_SPAN and _norm(name) in haystack[max(0, start - 200) : end + 200]
+
+
+def evidence_grounding(evidence: str, issue: PreparedIssue, name: str = "") -> str:
+    """exact | prefix | stitched | none — does the quoted evidence actually occur?"""
     haystack = _norm(issue.text + "\n" + "\n".join(issue.links) + "\n" + "\n".join(issue.alts))
     ev = _norm(evidence).strip(" .\"'")
     if ev and ev in haystack:
@@ -131,12 +164,14 @@ def evidence_grounding(evidence: str, issue: PreparedIssue) -> str:
     words = ev.split()
     if len(words) >= 4 and " ".join(words[:6]) in haystack:
         return "prefix"  # model paraphrased the tail of an otherwise real quote
+    if name and len(words) >= STITCH_MIN_CHUNK and _stitched(words, haystack, name):
+        return "stitched"
     return "none"
 
 
 _SIGNAL_RE = re.compile(
     r"sponsor|brought to you|presented by|together with|in partnership|from our partners|advertis|"
-    r"paid (?:post|partnership)|compensated|promoted by|a word from",
+    r"paid (?:post|partnership)|compensated|promoted by|a word from|a message from",
     re.IGNORECASE,
 )
 
@@ -184,6 +219,6 @@ def extract_sponsors(
         parsed = json.loads(resp.text)
     except json.JSONDecodeError as e:
         return result | {"status": "bad_json", "error": str(e), "raw": resp.text[:2000], "sponsors": [], "excluded": []}
-    sponsors = [s | {"grounding": evidence_grounding(s.get("evidence", ""), issue)} for s in parsed.get("sponsors", [])]
+    sponsors = [s | {"grounding": evidence_grounding(s.get("evidence", ""), issue, s.get("name", ""))} for s in parsed.get("sponsors", [])]
     truncated = resp.tokens_in >= OLLAMA_OPTIONS["num_ctx"] - 32  # Ollama truncates silently at num_ctx
     return result | {"status": "context_truncated" if truncated else "ok", "sponsors": sponsors, "excluded": parsed.get("excluded", [])}

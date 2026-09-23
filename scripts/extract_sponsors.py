@@ -53,7 +53,9 @@ def main() -> int:
     done = set()
     if os.path.exists(out_path):
         with open(out_path, encoding="utf-8") as f:
-            done = {(r["issue_id"], r["fingerprint"]) for r in map(json.loads, f)}
+            # errors (Ollama down, HTTP 500) are retried; ok and bad_json are final —
+            # temperature 0 makes a bad_json deterministic, so retrying it is wasted
+            done = {(r["issue_id"], r["fingerprint"]) for r in map(json.loads, f) if not r["status"].startswith("error")}
 
     fetcher = PoliteFetcher()
     run_id = f"extract_{prompt_version}_{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}"

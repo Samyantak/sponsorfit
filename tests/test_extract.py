@@ -91,3 +91,19 @@ def test_signal_nearby_separates_ads_from_news_items():
     assert not sponsorship_signal_nearby("Spend management platform Brex secured a $235m credit facility", issue)
     assert sponsorship_signal_nearby("Middesk helps you verify businesses instantly", issue)
     assert sponsorship_signal_nearby("Brought to you by Acme", issue)  # label in the evidence itself
+
+
+def test_grounding_accepts_label_stitched_to_its_list_item():
+    # Real Pragmatic Engineer layout: label on its own line, sponsors listed below.
+    text = "Brought to You by\n• Sonar — Code quality for ALL code.\n• Buildkite – the CI platform trusted by OpenAI, Anthropic and many more.\nIn This Episode"
+    issue = PreparedIssue(text=text, links=[], alts=[])
+    ev = "Brought to You by • Buildkite – the CI platform trusted by OpenAI, Anthropic and many more."
+    assert evidence_grounding(ev, issue, "Buildkite") == "stitched"
+
+
+def test_grounding_rejects_stitch_when_pieces_are_far_apart_or_name_absent():
+    far = "Brought to You by\n" + ("filler words here. " * 80) + "\nthe CI platform trusted by OpenAI and many more"
+    issue = PreparedIssue(text=far, links=[], alts=[])
+    assert evidence_grounding("Brought to You by the CI platform trusted by OpenAI and many more", issue, "Buildkite") == "none"
+    near = PreparedIssue(text="Brought to You by\n• Sonar — code quality.\n• the CI platform trusted by OpenAI and many more", links=[], alts=[])
+    assert evidence_grounding("Brought to You by • the CI platform trusted by OpenAI and many more", near, "Buildkite") == "none"
