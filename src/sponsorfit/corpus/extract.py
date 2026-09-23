@@ -21,6 +21,9 @@ from sponsorfit.scrape.screen import html_to_text
 
 MAX_TEXT_CHARS = 24_000  # ~6k tokens; head + tail kept when longer
 OLLAMA_OPTIONS = {"num_ctx": 16384, "temperature": 0}
+# v1 used 1500: every one of its bad_json results stopped at exactly 1500
+# output tokens (a long, over-extracted list cut off mid-JSON).
+MAX_OUTPUT_TOKENS = 3000
 
 # Script/style carry beehiiv's JSON copy of the issue (duplicates, 500k+ chars);
 # the issue itself is rendered as HTML too, so dropping these loses no sponsor.
@@ -131,6 +134,30 @@ def evidence_grounding(evidence: str, issue: PreparedIssue) -> str:
     return "none"
 
 
+_SIGNAL_RE = re.compile(
+    r"sponsor|brought to you|presented by|together with|in partnership|from our partners|advertis|"
+    r"paid (?:post|partnership)|compensated|promoted by|a word from",
+    re.IGNORECASE,
+)
+
+
+def sponsorship_signal_nearby(evidence: str, issue: PreparedIssue, window: int = 300) -> bool:
+    """LLM-independent sanity check: is there any sponsorship wording in the
+    evidence itself or within `window` chars of where it occurs? Verbatim
+    grounding alone can't catch v1's failure — "Brex secured a $235m credit
+    facility" is a real quote, just not a sponsorship. A flag, not a filter:
+    logo-only slots can legitimately lack nearby wording."""
+    if _SIGNAL_RE.search(evidence):
+        return True
+    words = evidence.translate(_QUOTE_MAP).split()[:6]
+    if not words:
+        return False
+    m = re.search(r"\s+".join(map(re.escape, words)), issue.text.translate(_QUOTE_MAP), re.IGNORECASE)
+    if not m:
+        return False
+    return bool(_SIGNAL_RE.search(issue.text[max(0, m.start() - window) : m.end() + window]))
+
+
 def extract_sponsors(
     client: MeteredLLMClient,
     *,
@@ -146,7 +173,7 @@ def extract_sponsors(
         model=model,
         system=system_prompt,
         messages=[{"role": "user", "content": issue.render(newsletter, issue_url)}],
-        max_tokens=1500,
+        max_tokens=MAX_OUTPUT_TOKENS,
         prompt_version=prompt_version,
         agent="sponsor_extractor",
         json_schema=SCHEMA,

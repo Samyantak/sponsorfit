@@ -78,3 +78,16 @@ def test_extract_reports_bad_json_instead_of_crashing():
 def test_extract_flags_silent_context_truncation():
     result = _run(_client_returning('{"sponsors": [], "excluded": []}', tokens_in=16384), PreparedIssue("x", [], []))
     assert result["status"] == "context_truncated"
+
+
+def test_signal_nearby_separates_ads_from_news_items():
+    from sponsorfit.corpus.extract import sponsorship_signal_nearby
+
+    text = (
+        "Funding\n" + "Other news filler. " * 30 + "\nSpend management platform Brex secured a $235m credit facility with Citi.\n"
+        + "More filler. " * 30 + "\nSPONSORED\nMiddesk helps you verify businesses instantly.\n"
+    )
+    issue = PreparedIssue(text=text, links=[], alts=[])
+    assert not sponsorship_signal_nearby("Spend management platform Brex secured a $235m credit facility", issue)
+    assert sponsorship_signal_nearby("Middesk helps you verify businesses instantly", issue)
+    assert sponsorship_signal_nearby("Brought to you by Acme", issue)  # label in the evidence itself

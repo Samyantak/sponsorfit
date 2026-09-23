@@ -5,7 +5,7 @@ data/processed/extractions/<prompt_version>__<model>.jsonl, keyed by
 (issue_id, input fingerprint): an interrupted run resumes where it stopped,
 and re-running an unchanged prompt/model/input is free.
 
-    uv run python scripts/extract_sponsors.py [--limit N] [--only NAME ...] [--sample N]
+    uv run python scripts/extract_sponsors.py [--prompt-version extraction_v2] [--limit N] [--only NAME ...] [--sample N]
 """
 
 import argparse
@@ -21,7 +21,7 @@ from sponsorfit.corpus.extract import extract_sponsors, prepare_issue
 from sponsorfit.llm import MeteredLLMClient
 from sponsorfit.scrape.fetch import PoliteFetcher
 
-PROMPT_VERSION = "extraction_v1"
+DEFAULT_PROMPT_VERSION = "extraction_v2"
 MODEL = "qwen3:8b"
 ISSUES = os.path.join("data", "sources", "issues.csv")
 PUBLISHERS = os.path.join("data", "sources", "publishers.csv")
@@ -33,9 +33,11 @@ def main() -> int:
     ap.add_argument("--limit", type=int, help="stop after N new extractions")
     ap.add_argument("--only", nargs="*", help="publisher names")
     ap.add_argument("--sample", type=int, help="random N issues (seeded), for trial runs")
+    ap.add_argument("--prompt-version", default=DEFAULT_PROMPT_VERSION, help="prompts/<version>.md")
     args = ap.parse_args()
+    prompt_version = args.prompt_version
 
-    with open(PROMPT_PATH := os.path.join("prompts", f"{PROMPT_VERSION}.md"), encoding="utf-8") as f:
+    with open(prompt_path := os.path.join("prompts", f"{prompt_version}.md"), encoding="utf-8") as f:
         system_prompt = f.read()
     with open(PUBLISHERS, newline="", encoding="utf-8") as f:
         site_of = {p["id"]: p["url"] for p in csv.DictReader(f)}
@@ -47,16 +49,16 @@ def main() -> int:
         issues = random.Random(42).sample(issues, min(args.sample, len(issues)))
 
     os.makedirs(OUT_DIR, exist_ok=True)
-    out_path = os.path.join(OUT_DIR, f"{PROMPT_VERSION}__{MODEL.replace(':', '-')}.jsonl")
+    out_path = os.path.join(OUT_DIR, f"{prompt_version}__{MODEL.replace(':', '-')}.jsonl")
     done = set()
     if os.path.exists(out_path):
         with open(out_path, encoding="utf-8") as f:
             done = {(r["issue_id"], r["fingerprint"]) for r in map(json.loads, f)}
 
     fetcher = PoliteFetcher()
-    run_id = f"extract_{PROMPT_VERSION}_{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}"
+    run_id = f"extract_{prompt_version}_{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}"
     client = MeteredLLMClient(run_id=run_id)
-    print(f"{len(issues)} issues, {len(done)} already extracted; prompt={PROMPT_PATH} model={MODEL} run={run_id}")
+    print(f"{len(issues)} issues, {len(done)} already extracted; prompt={prompt_path} model={MODEL} run={run_id}")
 
     new = skipped = 0
     started = time.monotonic()
@@ -69,7 +71,7 @@ def main() -> int:
                 continue
             try:
                 result = extract_sponsors(
-                    client, system_prompt=system_prompt, prompt_version=PROMPT_VERSION, model=MODEL,
+                    client, system_prompt=system_prompt, prompt_version=prompt_version, model=MODEL,
                     newsletter=row["publisher"], issue_url=row["issue_url"], issue=prepared,
                 )
             except Exception as e:  # Ollama down / timeout: record and continue, don't lose the run
@@ -77,7 +79,7 @@ def main() -> int:
             record = {
                 "issue_id": row["issue_id"], "publisher_id": row["publisher_id"], "publisher": row["publisher"],
                 "vertical": row["vertical"], "issue_url": row["issue_url"], "published": row["published"],
-                "prompt_version": PROMPT_VERSION, "model": MODEL, "fingerprint": prepared.fingerprint(),
+                "prompt_version": prompt_version, "model": MODEL, "fingerprint": prepared.fingerprint(),
                 "input_chars": len(prepared.text),
             } | result
             out.write(json.dumps(record) + "\n")
