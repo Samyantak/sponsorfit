@@ -13,7 +13,10 @@ def test_substack_brought_to_you_by():
 
 def test_beehiiv_escaped_json_header():
     # beehiiv ships issue HTML as an escaped JSON string inside <script>
-    raw = r'"html":"<h6 style=\"margin:0\">TOGETHER WITH UNWRAP</h6><p>Body</p>"'
+    # Escapes built from parts so no editor or tool can decode them in the source.
+    lt, gt = "\\" + "u003c", "\\" + "u003e"
+    raw = f'"html":"{lt}h6 style=\\"margin:0\\"{gt}TOGETHER WITH UNWRAP{lt}/h6{gt}{lt}p{gt}Body{lt}/p{gt}"'
+    assert "<h6" not in raw  # guard: this test is only meaningful with the escapes intact
     markers = find_sponsor_markers(raw)
     assert markers and "UNWRAP" in markers[0]
 
@@ -114,7 +117,8 @@ def test_long_crawl_delay_is_declined_not_violated(tmp_path):
 
 
 def test_link_roundup_items_are_not_followed_off_site(tmp_path):
-    from sponsorfit.scrape.screen import Issue, _issue_html
+    from sponsorfit.scrape.archive import Issue
+    from sponsorfit.scrape.screen import _issue_html
 
     f = FakeFetcher({}, cache_dir=str(tmp_path))
     issue = Issue(link="https://github.com/someone/repo", feed_html="<p>short blurb</p>")
@@ -131,7 +135,7 @@ def test_beehiiv_ad_slot_markup():
 
 
 def test_sitemap_fallback_follows_index_and_orders_newest_first(tmp_path):
-    from sponsorfit.scrape.screen import _sitemap_issues
+    from sponsorfit.scrape.archive import sitemap_issues
 
     index = """<sitemapindex><sitemap><loc>https://news.example.com/sitemap-posts.xml</loc></sitemap></sitemapindex>"""
     posts = """<urlset>
@@ -148,5 +152,5 @@ def test_sitemap_fallback_follows_index_and_orders_newest_first(tmp_path):
         },
         cache_dir=str(tmp_path),
     )
-    issues = _sitemap_issues(f, "https://news.example.com")
+    issues = sitemap_issues(f, "https://news.example.com")
     assert [i.link for i in issues] == ["https://news.example.com/p/new-issue", "https://news.example.com/p/old-issue"]

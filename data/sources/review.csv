@@ -13,12 +13,11 @@ Generation Iron,health_fitness,reject,"only hit is prose (""presented by none ot
 Newsletter Operator,indie_business,keep,sponsored by beehiiv,sponsor is also the author's own platform partner; single sponsor so far
 Not Boring,indie_business,keep,brought to you by… Reducto / Arena Magazine / Create,"""not boring world"" hit is self-promo"
 The Bootstrapped Founder,indie_business,keep,a word from our Sponsor: Paddle.com,1/6
-Trends.vc,indie_business,keep,"""Brought to you by the team behind HeadsUp""","unclear whether HeadsUp is a sponsor or the author's own product — verify in 1.2; drop if self-promo"
+Trends.vc,indie_business,keep,"""Brought to you by the team behind HeadsUp""",unclear whether HeadsUp is a sponsor or the author's own product — verify in 1.2; drop if self-promo
 Growth Memo,marketing,keep,Today's sponsor: Semrush,
 Stacked Marketer,marketing,keep,SPONSORED BY Bitmedia / Cloudwaves / Audiense / Psychology of Marketing,"""FROM THE CREW"" / ""Happy Monday"" hits are house content"
-The Marketing Millennials,marketing,keep,in partnership with Unbounce,feed is the /articles blog not the daily email — 1.2 must find the email archive
 Every Baby Is Different Anyways,parenting,keep,Presented by BabyBjörn / Talli / SNOO Smart Sleeper,
-Exec Sum,personal_finance,keep,"Together with [logo]; brought to you by F2",sponsor name often only in logo image
+Exec Sum,personal_finance,keep,Together with [logo]; brought to you by F2,sponsor name often only in logo image
 Money with Katie,personal_finance,keep,brought to you by my partner Betterment,
 This Week in Fintech,personal_finance,keep,SPONSORED Bitfinex / Middesk / CoverForce,
 Fintech Business Weekly,personal_finance,reject,"only hit is prose (""presented by these types of third-party relationships"")",no genuine sponsor seen
@@ -38,10 +37,8 @@ The Rundown AI,tech,keep,TOGETHER WITH Unwrap / Pave / Algolia; PRESENTED BY Opt
 TLDR,tech,keep,(Sponsor) blocks,
 Bottle & Barrel,food,keep,"beehiiv ""In partnership with [logo]"" header",sponsor name in logo image
 Healthy Fit Fam,food,keep,sponsored by Bonner Wines / brodo / hotels,
-Build Wealth Yourself,personal_finance,keep,"beehiiv ""In partnership with [logo]"" header",sponsor name in logo image
 Fintech Is Femme,personal_finance,keep,"beehiiv ""In partnership with"" header",
 Money Explored,personal_finance,keep,in partnership with HubSpot / Range / Wispr Flow / Apollo / Skydive / PodPitch,
-Wealth Daily,personal_finance,keep,"beehiiv ""In partnership with"" header (seen only in page JSON)",weak evidence; verify in 1.2
 Beyond Banks,personal_finance,reject,"only hit is prose (""sponsored by any bank should pull their program agreement"")",no genuine sponsor seen
 Marketing Minds,marketing,keep,Sponsored by: / In partnership with — Apollo and others,
 The Influencer Club,marketing,keep,"beehiiv ""In partnership with [logo]"" header",sponsor name in logo image
@@ -49,3 +46,7 @@ Notable Daily,indie_business,keep,In partnership with Attio / Sponsored by HubSp
 The Sober Sip,health_fitness,keep,brought to you by Aura House,
 Unicorn Club,design,reject,"every hit is the site's own ""Sponsor"" nav link (self-promo)",sells sponsorships but no issue-level sponsor detected
 Onextrapixel,design,reject,"""Sponsored"" is a blog post category, not a newsletter sponsorship",
+MKT1 Newsletter,marketing,keep,Brought to you by: Appcues / Framer / Profound / Attio / Zapier / Traction Complete,~3 named sponsors per issue
+The Marketing Millennials,marketing,reject,in partnership with Unbounce (blog post),archive: the feed and site are the /articles blog; the daily email has no public web archive
+Wealth Daily,personal_finance,reject,"beehiiv ""In partnership with"" header (JSON only)",archive: no /archive page and sitemap dates unusable; 0 in-window issues found
+Build Wealth Yourself,personal_finance,reject,"beehiiv ""In partnership with [logo]"" header",archive: only 1 issue since 2025-01 (appears inactive)

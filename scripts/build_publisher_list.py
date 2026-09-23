@@ -37,11 +37,25 @@ def main() -> int:
     dropped = {v: c for v, c in per_vertical.items() if c < MIN_PER_VERTICAL}
     final = sorted((r for r in kept if r["vertical"] not in dropped), key=lambda r: (r["vertical"], r["name"].lower()))
 
+    # IDs are stable: issues.csv and every later artifact refer to publishers by
+    # id, so an existing publisher keeps its id, a new one gets the next unused
+    # number, and a removed publisher's id is never reused.
+    out_path = os.path.join(SOURCES_DIR, "publishers.csv")
+    existing = {r["name"]: r["id"] for r in _read("publishers.csv")} if os.path.exists(out_path) else {}
+    next_n = max((int(i.split("_")[1]) for i in existing.values()), default=0) + 1
+    ids = {}
+    for r in final:
+        if r["name"] in existing:
+            ids[r["name"]] = existing[r["name"]]
+        else:
+            ids[r["name"]] = f"pub_{next_n:03d}"
+            next_n += 1
+
     rows = []
-    for i, r in enumerate(final, start=1):
+    for r in final:
         rows.append(
             {
-                "id": f"pub_{i:03d}",
+                "id": ids[r["name"]],
                 "name": r["name"],
                 "vertical": r["vertical"],
                 "url": r["url"],
@@ -52,7 +66,7 @@ def main() -> int:
                 "notes": r["review"]["notes"],
             }
         )
-    with open(os.path.join(SOURCES_DIR, "publishers.csv"), "w", newline="", encoding="utf-8") as f:
+    with open(out_path, "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=COLUMNS)
         w.writeheader()
         w.writerows(rows)

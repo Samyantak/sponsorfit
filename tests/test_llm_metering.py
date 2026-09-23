@@ -78,3 +78,36 @@ def test_metered_call_ollama_is_free(tmp_path):
     row = costs.get_call(conn, result.call_id)
     assert row["provider"] == "ollama"
     assert row["cost_usd"] == 0.0
+
+
+def test_ollama_structured_output_and_options_reach_the_request(tmp_path):
+    fake_response = MagicMock()
+    fake_response.read.return_value = json.dumps(
+        {"message": {"content": '{"sponsors": []}'}, "prompt_eval_count": 5, "eval_count": 4}
+    ).encode("utf-8")
+    fake_response.__enter__.return_value = fake_response
+    fake_response.__exit__.return_value = False
+    schema = {"type": "object", "properties": {"sponsors": {"type": "array"}}}
+
+    with patch("urllib.request.urlopen", return_value=fake_response) as urlopen:
+        client = MeteredLLMClient(db_path=str(tmp_path / "c.db"), traces_dir=str(tmp_path / "t"))
+        client.call(
+            provider="ollama",
+            model="qwen3:8b",
+            messages=[{"role": "user", "content": "x"}],
+            max_tokens=100,
+            json_schema=schema,
+            ollama_options={"num_ctx": 16384, "temperature": 0},
+        )
+
+    sent = json.loads(urlopen.call_args[0][0].data)
+    assert sent["format"] == schema
+    assert sent["options"] == {"num_predict": 100, "num_ctx": 16384, "temperature": 0}
+
+
+def test_ollama_only_params_fail_loudly_for_cloud_providers(tmp_path):
+    import pytest
+
+    client = MeteredLLMClient(db_path=str(tmp_path / "c.db"), traces_dir=str(tmp_path / "t"))
+    with pytest.raises(NotImplementedError):
+        client.call(provider="anthropic", model="claude-haiku-4-5-20251001", messages=[], json_schema={"type": "object"})

@@ -155,3 +155,31 @@ Both cloud providers and Ollama are now confirmed working through the same wrapp
 - **Known limitation for the dataset card:** vertical labels are coarse. "health_fitness" mixes healthcare-industry newsletters (Out-of-Pocket, Hospitalogy, Health Tech Nerds) with consumer fitness (Arnold's Pump Club, Today's Ajenda). "personal_finance" mixes fintech-industry (This Week in Fintech, Fintech Is Femme) with consumer money (Money with Katie, Build Wealth Yourself). Same-vertical "hard negatives" are therefore uneven in difficulty. Consider sub-verticals before building the eval set.
 
 **Phase 1.1 status: complete.** Next: Phase 1.2, archive collection (20–50 issues per publisher, via sitemaps where feeds are shallow) and LLM sponsor extraction with `qwen3:8b`.
+
+## 2026-09-22 / 23 — Phase 1.2 step A: archive collection
+
+**Goal:** for each publisher, a sample of 20–50 issues with **trustworthy publish dates**, because the Phase 1.4 train/test split is by time.
+
+**Selection policy:** 40 issues per publisher **spread evenly across 2025-01-01 → now**, not the latest 40. For a daily newsletter the latest 40 cover ~2 months: few distinct sponsors and nothing to split on by time.
+
+**Built `src/sponsorfit/scrape/archive.py`** (feed/sitemap helpers moved out of `screen.py`, which now imports them) with a per-platform deep-archive reader, since every platform exposes history differently:
+- **Substack:** public archive API (`/api/v1/archive`, allowed by robots.txt). Exact dates plus a paid/free flag. Paid posts are kept and flagged (110 of them): their public preview shows the opening, where sponsor blocks sit.
+- **beehiiv:** `/archive?page=N` embeds each post's send date. Two real bugs found on real pages. (1) Matching `"slug"` keys directly picked up **content-tag slugs** (`/p/fintech`, `/p/mena` → 404s), so post slugs now come only from `/p/<slug>` links. (2) Field order differs between sites (Notable Daily puts the date *before* the slug), so the nearest date is taken in either direction.
+- **beehiiv sitemap `<lastmod>` is unusable:** Exec Sum's sitemap stamps a 2022 issue `2025-04-15` (bulk re-save).
+- **Cooperpress:** `/issues` lists all ~614 numbered issues, but **pages carry no date**. Dates are estimated from issue number (strictly weekly), anchored to dated feed issues, and marked `cooperpress_estimated` (131 issues; ±1–2 weeks around holidays).
+- **WordPress:** feeds page back with `?paged=N`. Hospitalogy, tim.blog and Bootstrapped Founder **strip the generator tag**, so they were read as "unknown" and never paged (10 issues each). Unknown-platform feeds now get a paging attempt, guarded so a server that ignores `?paged` and repeats page 1 yields nothing and isn't mislabelled as WordPress.
+- **Health Tech Nerds:** `/archive` redirects to `/htn-archive` and drops `?page=`, so every page repeats. When the beehiiv archive never reaches the window start, the sitemap is added as well, and the collector **refills from a seeded random draw, verifying each page's real date** (capped at 150 extra fetches). 9 → 40 issues.
+- The collector always re-reads the publish date from the issue page itself where present, and marks proxy dates that turn out pre-window as `out_of_window`.
+
+**Corpus changes:**
+- Dropped for having no usable archive: **The Marketing Millennials** (the feed is the `/articles` blog; the email isn't archived on the web), **Wealth Daily** (no archive page, unusable sitemap dates), **Build Wealth Yourself** (1 issue since 2025-01; appears inactive). Reasons are recorded in `review.csv`.
+- That left marketing at 4, below the min-5 rule, so I screened 5 more marketing candidates. **MKT1 Newsletter** passed with clearly genuine sponsors (~3 named per issue: Appcues, Framer, Profound, Attio, Zapier…).
+- **Bug caught before it bit:** `build_publisher_list.py` numbered publishers by sorted position, so adding or removing any publisher would have **silently shifted every id** that `issues.csv` refers to. IDs are now stable (existing kept, new get the next free number, removed never reused).
+
+**Result — `data/sources/issues.csv`: 1,360 issues, 36 publishers (20–40 each), 5 verticals.**
+- Tech 502 · health/fitness 274 · indie business 200 · marketing 199 · personal finance 185.
+- Spread across quarters: 2025Q1 212 · Q2 201 · Q3 174 · Q4 169 · 2026Q1 146 · Q2 183 · Q3 275.
+- Date provenance: page 1,121 · Cooperpress-estimated 131 · feed/paged 69 · sitemap 39.
+- Tests: 32 → 40 (archive selection, per-platform dating incl. the real-world traps above).
+
+**Also found:** an editing-tool pitfall. Literal backslash-u escapes typed into files get decoded, which had silently turned the beehiiv escaped-JSON test into a plain-HTML test that still passed. Restored, with the escapes built from parts plus a guard assertion. Saved to assistant memory.

@@ -50,7 +50,15 @@ class MeteredLLMClient:
         max_tokens: int = 1024,
         prompt_version: str | None = None,
         agent: str = "manual",
+        json_schema: dict | None = None,
+        ollama_options: dict | None = None,
     ) -> LLMResponse:
+        """json_schema / ollama_options are Ollama-only for now (structured
+        output via Ollama's `format`, and options like num_ctx/temperature).
+        Passing them for a cloud provider fails loudly rather than being
+        silently ignored."""
+        if provider != "ollama" and (json_schema or ollama_options):
+            raise NotImplementedError(f"json_schema/ollama_options not supported for provider={provider}")
         call_id = uuid.uuid4().hex
         start = time.monotonic()
         try:
@@ -64,7 +72,7 @@ class MeteredLLMClient:
                 )
             elif provider == "ollama":
                 text, tokens_in, tokens_out, raw = self._call_ollama(
-                    model, messages, system, max_tokens
+                    model, messages, system, max_tokens, json_schema, ollama_options
                 )
             else:
                 raise ValueError(f"unknown provider: {provider}")
@@ -157,7 +165,7 @@ class MeteredLLMClient:
         text = resp.choices[0].message.content
         return text, resp.usage.prompt_tokens, resp.usage.completion_tokens, resp
 
-    def _call_ollama(self, model, messages, system, max_tokens):
+    def _call_ollama(self, model, messages, system, max_tokens, json_schema=None, ollama_options=None):
         import json
         import urllib.request
 
@@ -171,8 +179,10 @@ class MeteredLLMClient:
             # max_tokens on hidden reasoning and can return empty `content`.
             # Reasoning belongs in explicit structured-output fields (Phase 3+),
             # not a hidden chain-of-thought.
-            "options": {"num_predict": max_tokens},
+            "options": {"num_predict": max_tokens, **(ollama_options or {})},
         }
+        if json_schema:
+            payload["format"] = json_schema  # Ollama constrains decoding to this schema
         req = urllib.request.Request(
             f"{base_url}/api/chat",
             data=json.dumps(payload).encode("utf-8"),
