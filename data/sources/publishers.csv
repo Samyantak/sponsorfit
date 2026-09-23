@@ -1,0 +1,39 @@
+id,name,vertical,url,platform,feed_url,screen_sponsor_rate,evidence,notes
+pub_001,Arnold's Pump Club,health_fitness,https://arnoldspumpclub.com/blogs/newsletter,unknown,https://arnoldspumpclub.com/blogs/newsletter.atom,0.83,Together With Coveron / Momentous / Eight Sleep / Babbel / Cometeer,
+pub_002,Health Tech Nerds,health_fitness,https://www.healthtechnerds.com,sitemap,,1.0,in partnership with Ursa Health; brought to you by Bridge,"one prose false positive (""presented by counsel"")"
+pub_003,Hospitalogy,health_fitness,https://hospitalogy.com,unknown,https://hospitalogy.com/feed/,0.33,utm_medium=sponsor links,"text hit (""sponsored by Draft Kings"") is prose, not a sponsor; verify in 1.2"
+pub_004,Out-of-Pocket,health_fitness,https://www.outofpocket.health,sitemap,,0.67,"""brought to you by..."" blocks",sponsor name is in a logo image — extractor must read img alt / link domains
+pub_005,The Sober Sip,health_fitness,https://thesobercuratornewsletter.com,sitemap,,0.5,brought to you by Aura House,
+pub_006,Tim Ferriss Blog,health_fitness,https://tim.blog,unknown,https://tim.blog/feed/,0.67,AG1; Momentous; ProLon; Fin; Shopify; Helix Sleep; Gusto; Incogni,podcast show notes rather than a newsletter; one prose false positive
+pub_007,Today's Ajenda,health_fitness,https://todays-ajenda.beehiiv.com,sitemap,,0.33,sponsored by Pique; sponsored by Function Health,
+pub_008,Newsletter Operator,indie_business,https://www.newsletteroperator.com,sitemap,,0.33,sponsored by beehiiv,sponsor is also the author's own platform partner; single sponsor so far
+pub_009,Not Boring,indie_business,https://www.notboring.co,substack,https://www.notboring.co/feed,1.0,brought to you by… Reducto / Arena Magazine / Create,"""not boring world"" hit is self-promo"
+pub_010,Notable Daily,indie_business,https://notabledaily.beehiiv.com,sitemap,,1.0,In partnership with Attio / Sponsored by HubSpot,
+pub_011,The Bootstrapped Founder,indie_business,https://thebootstrappedfounder.com,unknown,https://thebootstrappedfounder.com/feed/,0.17,a word from our Sponsor: Paddle.com,1/6
+pub_012,Trends.vc,indie_business,https://trends.vc,wordpress,https://trends.vc/feed,1.0,"""Brought to you by the team behind HeadsUp""",unclear whether HeadsUp is a sponsor or the author's own product — verify in 1.2; drop if self-promo
+pub_013,Growth Memo,marketing,https://www.growth-memo.com,substack,https://www.growth-memo.com/feed,0.33,Today's sponsor: Semrush,
+pub_014,Marketing Minds,marketing,https://adoutreach.beehiiv.com,sitemap,,1.0,Sponsored by: / In partnership with — Apollo and others,
+pub_015,Stacked Marketer,marketing,https://www.stackedmarketer.com,wordpress,https://www.stackedmarketer.com/feed/,0.33,SPONSORED BY Bitmedia / Cloudwaves / Audiense / Psychology of Marketing,"""FROM THE CREW"" / ""Happy Monday"" hits are house content"
+pub_016,The Influencer Club,marketing,https://the-influencer-club-983a3e.beehiiv.com,sitemap,,1.0,"beehiiv ""In partnership with [logo]"" header",sponsor name in logo image
+pub_017,The Marketing Millennials,marketing,https://www.marketingmillennials.com,unknown,https://themarketingmillennials.com/feed/,0.17,in partnership with Unbounce,feed is the /articles blog not the daily email — 1.2 must find the email archive
+pub_018,Build Wealth Yourself,personal_finance,https://buildwealthyourself.net,sitemap,,0.33,"beehiiv ""In partnership with [logo]"" header",sponsor name in logo image
+pub_019,Exec Sum,personal_finance,https://www.execsum.co,sitemap,,0.83,Together with [logo]; brought to you by F2,sponsor name often only in logo image
+pub_020,Fintech Is Femme,personal_finance,https://fintechisfemme.beehiiv.com,sitemap,,0.17,"beehiiv ""In partnership with"" header",
+pub_021,Money Explored,personal_finance,https://moneyexplored.com,sitemap,,1.0,in partnership with HubSpot / Range / Wispr Flow / Apollo / Skydive / PodPitch,
+pub_022,Money with Katie,personal_finance,https://moneywithkatie.com,wordpress,https://moneywithkatie.com/feed,0.17,brought to you by my partner Betterment,
+pub_023,This Week in Fintech,personal_finance,https://thisweekinfintech.com,sitemap,,0.67,SPONSORED Bitfinex / Middesk / CoverForce,
+pub_024,Wealth Daily,personal_finance,https://wealthdaily.beehiiv.com,sitemap,,0.5,"beehiiv ""In partnership with"" header (seen only in page JSON)",weak evidence; verify in 1.2
+pub_025,Ben's Bites,tech,https://www.bensbites.com,substack,https://www.bensbites.com/feed,0.5,brought to you by Name.com / Adobe Acrobat,
+pub_026,ByteByteGo,tech,https://blog.bytebytego.com,substack,https://blog.bytebytego.com/feed,0.67,(Sponsored) blocks,
+pub_027,Golang Weekly,tech,https://golangweekly.com,cooperpress-like,https://golangweekly.com/rss/,1.0,Cooperpress sponsor labels,"""Together with Go Weekly"" is cross-promo, not a sponsor"
+pub_028,JavaScript Weekly,tech,https://javascriptweekly.com,cooperpress-like,https://javascriptweekly.com/rss/,1.0,Cooperpress sponsor labels,
+pub_029,Lenny's Newsletter,tech,https://www.lennysnewsletter.com,substack,https://www.lennysnewsletter.com/feed,0.5,Brought to you by: Optimizely / DX / WorkOS,
+pub_030,Postgres Weekly,tech,https://postgresweekly.com,cooperpress-like,https://postgresweekly.com/rss/,1.0,Cooperpress sponsor labels,"""Together with Postgres Weekly"" is cross-promo"
+pub_031,PyCoder's Weekly,tech,https://pycoders.com,cooperpress-like,https://pycoders.com/feed,1.0,sponsor labels (RWX; ScrapingBee; Real Python),
+pub_032,Refactoring,tech,https://refactoring.fm,substack,https://refactoring.fm/feed,0.67,brought to you by Blitzy / Notion,
+pub_033,SRE Weekly,tech,https://sreweekly.com,wordpress,https://sreweekly.com/feed/,1.0,A message from our sponsor: PlanetScale,
+pub_034,Superhuman AI,tech,https://www.superhuman.ai,sitemap,,1.0,PRESENTED BY Clarify / Profound / Harness / Nebius / Glean …,
+pub_035,The Neuron,tech,https://www.theneurondaily.com,beehiiv,https://rss.beehiiv.com/feeds/N4eCstxvgX.xml,0.67,FROM OUR PARTNERS blocks,sponsor name often only in logo image
+pub_036,The Pragmatic Engineer,tech,https://newsletter.pragmaticengineer.com,substack,https://newsletter.pragmaticengineer.com/feed,1.0,Brought to You by turbopuffer,"""PRESENTED BY The Pragmatic Engineer"" is self-promo"
+pub_037,The Rundown AI,tech,https://www.therundown.ai,unknown,https://www.therundown.ai/feed,0.67,TOGETHER WITH Unwrap / Pave / Algolia; PRESENTED BY Optimizely / CData,
+pub_038,TLDR,tech,https://tldr.tech,rss,https://tldr.tech/rss/,1.0,(Sponsor) blocks,

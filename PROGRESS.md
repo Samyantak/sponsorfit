@@ -137,3 +137,21 @@ Both cloud providers and Ollama are now confirmed working through the same wrapp
 - beehiiv pages repeat body text inside JSON, so dedupe before extraction.
 
 **Current result:** 37 candidates → **34 kept** after review. Tech 14, health/fitness 6, indie business 4, marketing 3, personal finance 3, design 2, food 1, parenting 1. That's below the 40–60 target and badly imbalanced: consumer creator newsletters (recipes, parenting) mostly don't run sponsors, which is itself a real finding about the market. Next: decide the vertical mix with the user.
+
+## 2026-09-22 — Phase 1.1: marketplace sourcing, final publisher list
+
+**Decision (user):** fix the vertical imbalance by sourcing from sponsorship marketplaces, aiming for ~8 per vertical, and **drop any vertical still under 5** afterwards.
+
+- **Paved turned out to be only partly useful.** Its listings genuinely sell sponsorships, but many are big-media emails (Today Parents, Tinybeans, Motherly) with **no public web archive**, and without an archive there's nothing to extract pairings from. The binding constraint is *sponsored **and** publicly archived*, which mostly means beehiiv/Substack-hosted newsletters.
+- **Best source found: beehiiv's "X newsletters to sponsor" blog series** (food & beverage, digital marketing, fintech, mental health, entrepreneurship, home improvement). These are beehiiv newsletters with public archives that sell ads through the beehiiv Ad Network. Also found Starglow Parenting Weekly (a beehiiv case study, "100% ad-supported"). Added 50 candidates (99 → 149), including 7 design newsletters from a separate search. Fixed Eat Good's URL (`jenneatsgoood.substack.com`; the guessed one was wrong).
+- Screener change: a feed with fewer than 3 items (UX Design Weekly's has 1) now also falls back to the sitemap.
+- **Dense Discovery is a known miss:** its issue pages are 7 KB JavaScript shells (content loaded client-side), so the sponsor slot can't be seen without a browser. Not pursued.
+- Spot-checked the 13 new hits: 10 genuine; 3 rejected (Beyond Banks: prose; Unicorn Club: every hit is its own "Sponsor" nav link; Onextrapixel: "Sponsored" is a blog category, not a newsletter slot). All verdicts are in `review.csv` (50 rows).
+- Added `scripts/build_publisher_list.py`: screening.csv + review.csv → **`data/sources/publishers.csv`**, applying the min-5-per-vertical rule. Reproducible, not hand-edited. It refuses to run if any screened-in publisher lacks a review verdict.
+
+**Result: 38 publishers, 5 verticals.** Tech 14 · health/fitness 7 · personal finance 7 · marketing 5 · indie business 5. Dropped: food (3), design (2), parenting (1).
+- Slightly under the roadmap's 40–60, and one vertical fewer than the roadmap's 5–8 range would ideally have. Accepted because the number that matters is **150–300 verified pairings**: 38 publishers × 20–50 issues, with most sponsored at least every other issue, should clear it comfortably. Phase 1.2 will confirm.
+- **Real finding about the market:** consumer creator newsletters (recipes, parenting, design inspiration) mostly don't run sponsors, and big-media ones that do don't publish archives. Worth a line in the dataset card's limitations.
+- **Known limitation for the dataset card:** vertical labels are coarse. "health_fitness" mixes healthcare-industry newsletters (Out-of-Pocket, Hospitalogy, Health Tech Nerds) with consumer fitness (Arnold's Pump Club, Today's Ajenda). "personal_finance" mixes fintech-industry (This Week in Fintech, Fintech Is Femme) with consumer money (Money with Katie, Build Wealth Yourself). Same-vertical "hard negatives" are therefore uneven in difficulty. Consider sub-verticals before building the eval set.
+
+**Phase 1.1 status: complete.** Next: Phase 1.2, archive collection (20–50 issues per publisher, via sitemaps where feeds are shallow) and LLM sponsor extraction with `qwen3:8b`.

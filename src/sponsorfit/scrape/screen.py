@@ -236,11 +236,11 @@ def screen_publisher(fetcher: PoliteFetcher, name: str, vertical: str, url: str,
     res = ScreenResult(name=name, vertical=vertical, url=url)
     try:
         feed_url, parsed = _discover_feed(fetcher, url)
-        if feed_url:
+        issues = _feed_issues(parsed) if feed_url else []
+        if len(issues) >= MIN_FEED_ITEMS:
             res.feed_url = feed_url
             res.platform = _platform(parsed, feed_url)
-            issues = _feed_issues(parsed)
-        else:
+        else:  # no feed, or a stub feed (UX Design Weekly's has 1 item)
             issues = _sitemap_issues(fetcher, url)
             res.platform = "sitemap"
     except RobotsDisallowed:

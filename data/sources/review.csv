@@ -36,3 +36,16 @@ The Neuron,tech,keep,FROM OUR PARTNERS blocks,sponsor name often only in logo im
 The Pragmatic Engineer,tech,keep,Brought to You by turbopuffer,"""PRESENTED BY The Pragmatic Engineer"" is self-promo"
 The Rundown AI,tech,keep,TOGETHER WITH Unwrap / Pave / Algolia; PRESENTED BY Optimizely / CData,
 TLDR,tech,keep,(Sponsor) blocks,
+Bottle & Barrel,food,keep,"beehiiv ""In partnership with [logo]"" header",sponsor name in logo image
+Healthy Fit Fam,food,keep,sponsored by Bonner Wines / brodo / hotels,
+Build Wealth Yourself,personal_finance,keep,"beehiiv ""In partnership with [logo]"" header",sponsor name in logo image
+Fintech Is Femme,personal_finance,keep,"beehiiv ""In partnership with"" header",
+Money Explored,personal_finance,keep,in partnership with HubSpot / Range / Wispr Flow / Apollo / Skydive / PodPitch,
+Wealth Daily,personal_finance,keep,"beehiiv ""In partnership with"" header (seen only in page JSON)",weak evidence; verify in 1.2
+Beyond Banks,personal_finance,reject,"only hit is prose (""sponsored by any bank should pull their program agreement"")",no genuine sponsor seen
+Marketing Minds,marketing,keep,Sponsored by: / In partnership with — Apollo and others,
+The Influencer Club,marketing,keep,"beehiiv ""In partnership with [logo]"" header",sponsor name in logo image
+Notable Daily,indie_business,keep,In partnership with Attio / Sponsored by HubSpot,
+The Sober Sip,health_fitness,keep,brought to you by Aura House,
+Unicorn Club,design,reject,"every hit is the site's own ""Sponsor"" nav link (self-promo)",sells sponsorships but no issue-level sponsor detected
+Onextrapixel,design,reject,"""Sponsored"" is a blog post category, not a newsletter sponsorship",
